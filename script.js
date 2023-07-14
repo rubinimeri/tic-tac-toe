@@ -43,7 +43,8 @@ const displayController = (function() {
     restart.addEventListener("click", () => {
         document.querySelector(".game-board").style.display = "none";
         document.querySelector(".buttons").style.display = "flex";
-        restart.style.display = "none"
+        restart.style.display = "none";
+        gameResult.style.display = "none";
         turn = true;
         tie = undefined;
 
