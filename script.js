@@ -73,21 +73,43 @@ const gameController = (function() {
     }
     const playround = () => gameBoard.forEach(element => {
         element.el.addEventListener("click", () => {
+            function win() {
+                if(element.marker === "X"){
+                    gameResult.innerText = `Congratulations ${playerOne.name}, you won!`;
+                    gameResult.style.display = "block"
+                    setTimeout(function() {
+                        gameResult.style.display = "none";
+                    },3000)
+                    turn = "X WINS";
+                }
+                else /* if(element.marker === "Y") */{
+                    gameResult.innerText = `Congratulations ${playerTwo.name}, you won!`;
+                    gameResult.style.display = "block"
+                    setTimeout(function() {
+                        gameResult.style.display = "none";
+                    },3000)
+                    turn = "Y WINS";
+                }
+            }
+            function tie() {
+                let result = gameBoard.find(element => element.marker === "");
+                if(result === undefined){
+                    gameResult.innerText = `It's a tie!`;
+                    gameResult.style.display = "block";
+                    setTimeout(function() {
+                        gameResult.style.display = "none";
+                    },3000)
+                    return tie = "tie";
+                }
+            }
             if(element.marker === "" && turn === true){
                 element.el.innerText = playerOne.marker;
                 element.marker = playerOne.marker
                 if(checkWinX() === true)
                 {
-                    gameResult.innerText = `Congratulations ${playerOne.name}, you won!`;
-                    gameResult.style.display = "block"
-                    return turn = "X WINS";
+                    return win();
                 }
-                let result = gameBoard.find(element => element.marker === "");
-                if(result === undefined){
-                    gameResult.innerText = `It's a tie!`;
-                    gameResult.style.display = "block";
-                    return tie = "tie";
-                }
+                tie();
                 turn = false;
             }
             else if(element.marker === "" && turn === false){
@@ -95,16 +117,10 @@ const gameController = (function() {
                 element.marker = playerTwo.marker
                 if(checkWinO() === true)
                 {
-                    gameResult.innerText = `Congratulations ${playerTwo.name}, you won!`;
-                    gameResult.style.display = "block"
-                    return turn = "O WINS";
+                    return win();
                 }
-                let result = gameBoard.find(element => element.marker === "");
-                if(result === undefined){
-                    gameResult.innerText = `It's a tie!`;
-                    gameResult.style.display = "block"
-                    return tie = "tie";
-                }
+                /* let result = gameBoard.find(element => element.marker === ""); */
+                tie();
                 turn = true;
             }
         })
@@ -119,13 +135,12 @@ const displayController = (function() {
     const render = (function (){
         const container = document.querySelector(".game-board");
         gameBoard.forEach(element => {
-            container.append(element.el)
+            container.append(element.el);
         });
     })();
 
-    start.addEventListener("click", gameController.startGame)
-    restart.addEventListener("click", gameController.restartGame)
-    gameController.playround()
+    start.addEventListener("click", gameController.startGame);
+    restart.addEventListener("click", gameController.restartGame);
+    gameController.playround();
     
-
 })();
