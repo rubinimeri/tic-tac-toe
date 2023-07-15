@@ -13,34 +13,30 @@ const gameBoard = (function() {
     return gameboard;
 })();
 
-(function render(){
-    const container = document.querySelector(".game-board");
-    gameBoard.forEach(element => {
-        container.append(element.el)
-    });
-})();
 
-const displayController = (function() {
+
+const gameController = (function() {
     let playerOne;
     let playerTwo;
-    const start = document.querySelector(".start");
     const restart = document.querySelector(".restart");
     const gameResult = document.querySelector(".result");
     let turn = true;
     let tie;
 
-    start.addEventListener("click", () => {
+
+    const startGame = () => {
         const x = document.querySelector("#player-x").value;
         const o = document.querySelector("#player-o").value;
 
         playerOne = Player("X", x);
         playerTwo = Player("O", o);
 
+        console.log(playerOne, playerTwo)
         document.querySelector(".game-board").style.display = "grid";
         document.querySelector(".buttons").style.display = "none";
         restart.style.display = "block"
-    })
-    restart.addEventListener("click", () => {
+    }
+    const restartGame = () => {
         document.querySelector(".game-board").style.display = "none";
         document.querySelector(".buttons").style.display = "flex";
         restart.style.display = "none";
@@ -54,20 +50,33 @@ const displayController = (function() {
             playerOne = undefined;
             playerTwo = undefined;
         })
-    })
-    gameBoard.forEach(element => {
+    }
+    const checkWinX = () => {
+        return (gameBoard[0].marker === "X" && gameBoard[1].marker === "X" && gameBoard[2].marker === "X" ||
+                gameBoard[3].marker === "X" && gameBoard[4].marker === "X" && gameBoard[5].marker === "X" ||
+                gameBoard[6].marker === "X" && gameBoard[7].marker === "X" && gameBoard[8].marker === "X" ||
+                gameBoard[0].marker === "X" && gameBoard[4].marker === "X" && gameBoard[8].marker === "X" ||
+                gameBoard[2].marker === "X" && gameBoard[4].marker === "X" && gameBoard[6].marker === "X" ||
+                gameBoard[0].marker === "X" && gameBoard[3].marker === "X" && gameBoard[6].marker === "X" ||
+                gameBoard[1].marker === "X" && gameBoard[4].marker === "X" && gameBoard[7].marker === "X" ||
+                gameBoard[2].marker === "X" && gameBoard[5].marker === "X" && gameBoard[8].marker === "X");
+    }
+    const checkWinO = () => {
+        return (gameBoard[0].marker === "O" && gameBoard[1].marker === "O" && gameBoard[2].marker === "O" ||
+                gameBoard[3].marker === "O" && gameBoard[4].marker === "O" && gameBoard[5].marker === "O" ||
+                gameBoard[6].marker === "O" && gameBoard[7].marker === "O" && gameBoard[8].marker === "O" ||
+                gameBoard[0].marker === "O" && gameBoard[4].marker === "O" && gameBoard[8].marker === "O" ||
+                gameBoard[2].marker === "O" && gameBoard[4].marker === "O" && gameBoard[6].marker === "O" ||
+                gameBoard[0].marker === "O" && gameBoard[3].marker === "O" && gameBoard[6].marker === "O" ||
+                gameBoard[1].marker === "O" && gameBoard[4].marker === "O" && gameBoard[7].marker === "O" ||
+                gameBoard[2].marker === "O" && gameBoard[5].marker === "O" && gameBoard[8].marker === "O")
+    }
+    const playround = () => gameBoard.forEach(element => {
         element.el.addEventListener("click", () => {
             if(element.marker === "" && turn === true){
                 element.el.innerText = playerOne.marker;
                 element.marker = playerOne.marker
-                if(gameBoard[0].marker === "X" && gameBoard[1].marker === "X" && gameBoard[2].marker === "X" ||
-                   gameBoard[3].marker === "X" && gameBoard[4].marker === "X" && gameBoard[5].marker === "X" ||
-                   gameBoard[6].marker === "X" && gameBoard[7].marker === "X" && gameBoard[8].marker === "X" ||
-                   gameBoard[0].marker === "X" && gameBoard[4].marker === "X" && gameBoard[8].marker === "X" ||
-                   gameBoard[2].marker === "X" && gameBoard[4].marker === "X" && gameBoard[6].marker === "X" ||
-                   gameBoard[0].marker === "X" && gameBoard[3].marker === "X" && gameBoard[6].marker === "X" ||
-                   gameBoard[1].marker === "X" && gameBoard[4].marker === "X" && gameBoard[7].marker === "X" ||
-                   gameBoard[2].marker === "X" && gameBoard[5].marker === "X" && gameBoard[8].marker === "X")
+                if(checkWinX() === true)
                 {
                     gameResult.innerText = `Congratulations ${playerOne.name}, you won!`;
                     gameResult.style.display = "block"
@@ -84,14 +93,7 @@ const displayController = (function() {
             else if(element.marker === "" && turn === false){
                 element.el.innerText = playerTwo.marker;
                 element.marker = playerTwo.marker
-                if( gameBoard[0].marker === "O" && gameBoard[1].marker === "O" && gameBoard[2].marker === "O" ||
-                    gameBoard[3].marker === "O" && gameBoard[4].marker === "O" && gameBoard[5].marker === "O" ||
-                    gameBoard[6].marker === "O" && gameBoard[7].marker === "O" && gameBoard[8].marker === "O" ||
-                    gameBoard[0].marker === "O" && gameBoard[4].marker === "O" && gameBoard[8].marker === "O" ||
-                    gameBoard[2].marker === "O" && gameBoard[4].marker === "O" && gameBoard[6].marker === "O" ||
-                    gameBoard[0].marker === "O" && gameBoard[3].marker === "O" && gameBoard[6].marker === "O" ||
-                    gameBoard[1].marker === "O" && gameBoard[4].marker === "O" && gameBoard[7].marker === "O" ||
-                    gameBoard[2].marker === "O" && gameBoard[5].marker === "O" && gameBoard[8].marker === "O")
+                if(checkWinO() === true)
                 {
                     gameResult.innerText = `Congratulations ${playerTwo.name}, you won!`;
                     gameResult.style.display = "block"
@@ -107,5 +109,23 @@ const displayController = (function() {
             }
         })
     })
+    return { startGame, restartGame, checkWinX, checkWinO, playround };
+})();
+
+const displayController = (function() {
+    const start = document.querySelector(".start");
+    const restart = document.querySelector(".restart");
+
+    const render = (function (){
+        const container = document.querySelector(".game-board");
+        gameBoard.forEach(element => {
+            container.append(element.el)
+        });
+    })();
+
+    start.addEventListener("click", gameController.startGame)
+    restart.addEventListener("click", gameController.restartGame)
+    gameController.playround()
+    
 
 })();
