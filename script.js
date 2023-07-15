@@ -119,13 +119,12 @@ const gameController = (function() {
                 {
                     return win();
                 }
-                /* let result = gameBoard.find(element => element.marker === ""); */
                 tie();
                 turn = true;
             }
         })
     })
-    return { startGame, restartGame, checkWinX, checkWinO, playround };
+    return { startGame, restartGame, playround };
 })();
 
 const displayController = (function() {
